@@ -25,7 +25,6 @@ QELGKYEQYIKWPWYIWLGFIAGLIAIVMVTIMLCCMTSCCSCLKGCCSCGSCCKFDEDDSEPVLKGVKLHYT
 `
 
 
-`
 *** Formatting options
 
 max_target_seqs	integer	500	Number of aligned sequences to keep. Use with report formats that do not have separate definition line and alignment sections such as tabular (all outfmt > 4). Not compatible with num_descriptions or num_alignments. Ties are broken by order of sequences in the database.
@@ -96,4 +95,3 @@ max_hsps	integer	none	Maximum number of HSPs (alignments) to keep for any single
           sstrand means Subject Strand
             qcovs means Query Coverage Per Subject
           qcovhsp means Query Coverage Per HSP
-`
