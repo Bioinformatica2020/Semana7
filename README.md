@@ -24,7 +24,9 @@ LQPELDSFKEELDKYFKNHTSPDVDLGDISGINASVVNIQKEIDRLNEVAKNLNESLIDL
 QELGKYEQYIKWPWYIWLGFIAGLIAIVMVTIMLCCMTSCCSCLKGCCSCGSCCKFDEDDSEPVLKGVKLHYT
 `
 
-
+`
 subprocess.call([programa,'-db',db,'-query', query,'-evalue',str(evalue),'-outfmt',
                                 "6 qacc sacc qlen slen length qstart qend sstart send score bitscore evalue pident nident mismatch positive stitle",
+                                
+`
                                 '-out', 'query.tab'])
