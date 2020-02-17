@@ -24,6 +24,7 @@ LQPELDSFKEELDKYFKNHTSPDVDLGDISGINASVVNIQKEIDRLNEVAKNLNESLIDL
 QELGKYEQYIKWPWYIWLGFIAGLIAIVMVTIMLCCMTSCCSCLKGCCSCGSCCKFDEDDSEPVLKGVKLHYT
 `
 
+`
 
 *** Formatting options
 
@@ -95,3 +96,4 @@ max_hsps	integer	none	Maximum number of HSPs (alignments) to keep for any single
           sstrand means Subject Strand
             qcovs means Query Coverage Per Subject
           qcovhsp means Query Coverage Per HSP
+`
