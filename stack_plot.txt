@@ -1,0 +1,90 @@
+
+
+from ipywidgets import Layout
+from matplotlib import cm
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+
+
+#fig = px.colors.qualitative.swatches()
+#fig.show()
+
+plotly_colors = {'Plotly':px.colors.qualitative.Plotly,
+                 'D3':px.colors.qualitative.D3,
+                 'G10':px.colors.qualitative.G10,
+                 'T10':px.colors.qualitative.T10,
+                 'Alphabet':px.colors.qualitative.Alphabet,
+                 'Dark24':px.colors.qualitative.Dark24,
+                 'Light24':px.colors.qualitative.Light24,
+                 'Set1':px.colors.qualitative.Set1,
+                 'Pastel1':px.colors.qualitative.Pastel1,
+                 'Dark2':px.colors.qualitative.Dark2,
+                 'Set2':px.colors.qualitative.Set2,
+                 'Pastel2':px.colors.qualitative.Pastel2,
+                 'Set3':px.colors.qualitative.Set3,
+                 'Antique':px.colors.qualitative.Antique,
+                 'Bold':px.colors.qualitative.Bold,
+                 'Pastel':px.colors.qualitative.Pastel,
+                 'Prism':px.colors.qualitative.Prism,
+                 'Safe':px.colors.qualitative.Safe,
+                 'Vivid':px.colors.qualitative.Vivid,
+                 'tab20':[matplotlib.colors.to_hex(i) for i in cm.tab20(np.arange(20)/20.)],
+                 'tab20b':[matplotlib.colors.to_hex(i) for i in cm.tab20b(np.arange(20)/20.)],
+                 'tab20c':[matplotlib.colors.to_hex(i) for i in cm.tab20c(np.arange(20)/20.)]}
+
+
+@interact
+def stacked_plot(ejex = widgets.Dropdown(options=list(lineage_corr.select_dtypes('object').columns),
+                                        value='Genus',description='X axis:',disabled=False,
+                                        layout=Layout(width='25%', height='25px')),
+                 ejey = widgets.Dropdown(options=list(lineage_corr.select_dtypes('object').columns),
+                                        value='Species',description='Y axis:',disabled=False,
+                                        layout=Layout(width='25%', height='25px')),
+                 colors = widgets.Dropdown(options=list(plotly_colors.keys()),value='Alphabet',
+                                           description='Colors:',disabled=False,
+                        layout=Layout(width='25%', height='25px')),
+                 salvar = widgets.ToggleButton(value=False,description='Save html',disabled=False,button_style='',
+                                tooltip='Description')):
+    lineage_corr = Class_Tax
+    columna = ejex
+    columna2 = ejey
+    lineage_corr = lineage_corr.sort_values(by =columna2,ascending=True).reset_index(drop=True)
+    columnas = lineage_corr[columna2].drop_duplicates().tolist()
+    columnas.insert(0, columna)
+    ###
+    datos = []
+    datos2 = []
+    for i in lineage_corr[columna].drop_duplicates():
+        #print('**********', i)
+        df = lineage_corr[lineage_corr[columna] == i]
+        dat = []
+        for x in lineage_corr[columna2].drop_duplicates():
+            if len(df[df[columna2].str.contains(x) == True]) > 0:
+                #print(i, x, df[df.Year.str.contains(x) == True][columna].count())
+                dat.append(df[df[columna2].str.contains(x) == True][columna].count())
+                datos2.append([i, x, df[df[columna2].str.contains(x) == True][columna].count()])
+            else:
+                #print(i, x, 0)
+                dat.append(0)
+                datos2.append([i, x, 0])
+    
+    DF = DataFrame(datos2, columns = [columna, columna2, 'Val2'])
+    vals = []
+    for i in DF[columna].drop_duplicates():
+        df2 = DF[DF[columna] == i]
+        for z in list((np.array(df2.Val2.tolist()) / sum(df2.Val2.tolist())) * 100):
+            vals.append(z)
+    DF['Val'] = vals
+    DF = DF.sort_values(by =columna,ascending=True).reset_index(drop=True)
+    fig = px.bar(DF, x=columna, y="Val", color=columna2, width=900, height=500,
+                color_discrete_sequence = plotly_colors[colors])
+    fig.update_layout(xaxis_type='category')
+    fig.update_yaxes(title_text='<b>Relative abundance (%)</b>')
+    #fig.update_xaxes(title_text='<b>Number of organisms</b>')
+    fig.layout.plot_bgcolor = 'white'
+    fig.show()
+    if salvar == True:
+        plotly.offline.plot(fig, filename = archivo_salida.split('.')[0]+'_Stacked_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')+'.html', auto_open=False)
+        fig.to_json()
+        fig.write_json()
