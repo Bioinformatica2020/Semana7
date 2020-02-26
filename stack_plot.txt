@@ -88,3 +88,55 @@ def stacked_plot(ejex = widgets.Dropdown(options=list(lineage_corr.select_dtypes
         plotly.offline.plot(fig, filename = archivo_salida.split('.')[0]+'_Stacked_'+datetime.datetime.now().strftime('%d.%B.%Y_%I-%M%p')+'.html', auto_open=False)
         fig.to_json()
         fig.write_json()
+
+### Circle
+
+Class_Tax['num'] = 1
+colores = ['BrBG','PiYG','PRGn','PuOr','RdBu','RdGy','RdYlBu','RdYlGn','Spectral','Blues','BuGn','BuPu',
+           'GnBu','Greens','Greys','Oranges','OrRd','PuBu','PuBuGn','PuRd','Purples','RdPu','Reds',
+           'YlGn','YlGnBu','YlOrBr','YlOrRd']
+colores.sort()# Funcion para obtener un diccionario e ingresar a jerarquias de un dataframe
+def get_levels(df = DataFrame([])):
+    levels = {}
+    for i in range(0, len(df.columns)):
+        if list(range(0, i)) != []:
+            levels[str(i)] = list(range(0, i)) + [len(df.columns)-1]
+    return levels
+niveles = get_levels(df = Class_Tax)
+
+
+@interact
+def scatter_plot(Level = widgets.SelectionSlider(options=['1', '2', '3', '4', '5', '6', '7', '8'],
+                                                 value='7',description='Level',disabled=False,
+                              continuous_update=False,orientation='horizontal',readout=True),
+                 barescala = widgets.SelectionSlider(options=range(1,51),
+                                                 value=5,description='Bar scale',disabled=False,
+                              continuous_update=False,orientation='horizontal',readout=True),
+                 colors = widgets.Dropdown(options=colores,value='RdYlBu',description='Colors:',disabled=False,
+                        layout=Layout(width='25%', height='25px')),
+                 salvar = widgets.ToggleButton(value=False,description='Save html',disabled=False,button_style='',
+                                tooltip='Description')):
+    nivel = niveles[Level]
+    df = Class_Tax.iloc[:,nivel]
+    print('\33[1m\33[7mLineage\33[0m: \33[1m'+' | '.join(df.columns.tolist()[0:len(nivel)-1]))
+    fig = px.sunburst(Class_Tax.iloc[:,niveles[Level]], path=Class_Tax.iloc[:,niveles[Level]].columns.tolist()[0:len(niveles[Level])-1],
+                      #title="Taxonomy Classification",
+                      color='num', color_continuous_scale = colors, values='num')
+    fig.update_layout(#uniformtext=dict(minsize=50),
+        margin = dict(t=2, l=0, r=0, b=0),
+        coloraxis_colorbar=dict(
+    title="Abundance",
+    thicknessmode="pixels",
+    thickness=30,
+    lenmode="pixels",
+    #len=400,
+    yanchor="bottom",
+    xanchor="center",
+    y=0,
+    x=0.85,
+    ticks="outside",
+    dtick=barescala))
+    fig.update_layout()
+    fig.show()
+    if salvar == True:
+        plotly.offline.plot(fig, filename = '_Tax_Class_.html', auto_open=False)
